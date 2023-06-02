@@ -9,11 +9,21 @@ import { NavLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Table from 'react-bootstrap/esm/Table';
 import { DLT } from '../redux/actions/action';
+import { useNavigate, useParams } from 'react-router-dom'
+import { ADD,REMOVE } from '../redux/actions/action'
+import "bootstrap/dist/css/bootstrap.min.css";
+import Swal from "sweetalert";
 
 const Header = () => {
 
     const [price,setPrice] = useState(0);
     // console.log(price);
+
+    const [data,setData] = useState([]);
+
+    const {id} = useParams();
+
+    const history = useNavigate();
 
         const getdata = useSelector((state)=> state.cartreducer.carts);
         // console.log(getdata);
@@ -34,6 +44,38 @@ const Header = () => {
         dispatch(DLT(id))
     }
 
+    const send = (e)=>{
+        // console.log(e);
+        dispatch(ADD(e));
+      }
+
+
+      const remove = (item)=>{
+        dispatch(REMOVE(item))
+      }
+
+      const compare = ()=>{
+        let comparedata = getdata.filter((e)=>{
+          return e.id == id
+        });
+        setData(comparedata);
+      }
+
+      const showAlert = () =>{
+        Swal({
+            title: "Success",
+            text: "Congratulations on buying your Favourite Game!!",
+            icon: "success",
+            confirmButtonText: "OK",
+          });
+      }
+
+
+
+      useEffect(()=>{
+        compare();
+      },[id])
+    
 
     const total = ()=>{
         let price = 0;
@@ -49,7 +91,7 @@ const Header = () => {
 
     return (
         <>
-            <Navbar bg="dark" variant="dark" style={{ height: "60px" }}>
+            <Navbar bg="dark" variant="dark" style={{ height: "50px" }}>
                 <Container>
                     <NavLink to="/" className="text-decoration-none text-light mx-3">Games Shop</NavLink>
                     <Nav className="me-auto">
@@ -107,6 +149,11 @@ const Header = () => {
                                                             <p style={{color:"red",fontSize:20,cursor:"pointer"}} onClick={()=>dlt(e.id)}>
                                                                 <i className='fas fa-trash smalltrash'></i>
                                                             </p>
+                                                            <button style={{fontSize:18,cursor:"pointer"}} onClick={e.qnty <=1 ? ()=>dlt(e.id) : ()=>remove(e)}>-</button>
+
+                                                            <span  style={{fontSize:18,cursor:"pointer"}}>{e.qnty}</span>
+                                                            
+                                                            <button style={{fontSize:18,cursor:"pointer"}} onClick={()=>send(e)}>+</button>
                                                         </td>
 
                                                         <td className='mt-5'style={{color:"red",fontSize:20,cursor:"pointer"}}  onClick={()=>dlt(e.id)}>
@@ -118,6 +165,7 @@ const Header = () => {
                                         })
                                     }
                                     <p className='text-center'>Total :₹ {price}</p>
+                                    <button className="btn btn-primary btn-lg"  style={{textAlign:"center"}} onClick={showAlert}>Checkout</button>
                                 </tbody>
                             </Table>
                         </div>:
@@ -126,8 +174,8 @@ const Header = () => {
                     <i className='fas fa-close smallclose'
                     onClick={handleClose}
                      style={{position:"absolute",top:2,right:20,fontSize:23,cursor:"pointer"}}></i>
-                    <p style={{fontSize:22}}>Your carts is empty</p>
-                    <img src="./cart.gif" alt="" className='emptycart_img' style={{width:"5rem",padding:10}} />
+                    <p style={{fontSize:22}}>Your cart is empty</p>
+                    <img src="https://cdn-icons-png.flaticon.com/512/102/102661.png" alt="" className='emptycart_img' style={{width:"5rem",padding:10}} />
                    </div>
                     }
 
